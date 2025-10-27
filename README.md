@@ -1,3 +1,6 @@
+![Flow diagram](flow.png)
+
+
 # Fine-tuning Modes for Underrepresented Programming Languages using Reinforcement Learning
 
 ## Problem Statement
@@ -10,7 +13,7 @@ While models like Llama 3.2 7B are compact and efficient, they often struggle wi
 - Following language-specific best practices
 - Handling specialized libraries and frameworks
 
-**Our Goal**: Fine-tune a small, efficient model (Llama 3.2 7B) using Reinforcement Learning to achieve strong performance on underrepresented programming languages, making specialized language assistance more accessible and cost-effective.
+**Our Goal**: Fine-tune a small, efficient model ([unsloth/Llama-3.2-7B-Instruct](https://huggingface.co/unsloth/Llama-3.2-7B-Instruct)) using Reinforcement Learning to achieve strong performance on underrepresented programming languages, making specialized language assistance more accessible and cost-effective.
 
 ## Approach
 
@@ -20,16 +23,34 @@ We leverage **Unsloth** for efficient fine-tuning and **GRPO (Group Relative Pol
 
 - **Unsloth**: A high-performance library for efficient LLM fine-tuning with reduced memory usage
 - **GRPO (Group Relative Policy Optimization)**: An advanced RL algorithm for aligning language models
-- **Llama 3.2 7B**: A compact yet powerful base model suitable for fine-tuning (target model for training)
-- **Llama 3 70B Instruct**: Used for dataset generation to convert Python problems to Julia and R
+- **[unsloth/Llama-3.2-7B-Instruct](https://huggingface.co/unsloth/Llama-3.2-7B-Instruct)**: A compact yet powerful base model that we fine-tune for Julia and R code generation
+- **[unsloth/Llama-3.3-70B-Instruct](https://huggingface.co/unsloth/Llama-3.3-70B-Instruct)**: Larger model used for dataset generation to convert Python problems to Julia and R
 - **OpenEnv**: An end-to-end framework for creating, deploying, and using isolated execution environments for agentic RL training, built using Gymnasium-style simple APIs
 
 ### Methodology
 
-1. **Dataset Generation**: Convert Python programming problems to Julia and R using Llama 3 70B Instruct
+1. **Dataset Generation**: Convert Python programming problems to Julia and R using Llama 3.3 70B Instruct
 2. **Code Validation**: Filter through compiler and test framework to ensure correctness
-3. **GRPO Training with Execution-Based Rewards**: Apply reinforcement learning with feedback from code execution
+3. **GRPO Training with Execution-Based Rewards**: Train Llama 3.2 7B using reinforcement learning with feedback from code execution
 4. **Evaluation**: Test model performance on both languages
+
+### Why Two Different Models?
+
+We employ a **two-model strategy** for optimal efficiency and performance:
+
+- **Dataset Generation: [Llama 3.3 70B Instruct](https://huggingface.co/unsloth/Llama-3.3-70B-Instruct)**
+  - Larger, more capable model for high-quality dataset creation
+  - Better at understanding complex Python code and translating to Julia/R
+  - Used offline for one-time dataset generation
+  - Ensures high-quality training data
+
+- **Model Training: [Llama 3.2 7B Instruct](https://huggingface.co/unsloth/Llama-3.2-7B-Instruct)**
+  - Smaller, efficient model that can be deployed easily
+  - Fast inference for real-time code generation
+  - Cost-effective for production deployment
+  - Can run on consumer hardware after fine-tuning
+
+This approach combines the strengths of both models: leveraging the 70B model's superior capabilities for creating a high-quality dataset, then distilling that knowledge into a compact 7B model that's practical for real-world use.
 
 ## Dataset Generation
 
@@ -45,14 +66,14 @@ We started with the **[Ace-Code-87k dataset](https://huggingface.co/datasets/BAA
 
 #### Step 2: Code and Test Generation
 
-We used **Llama 3 70B Instruct** to:
+We used **[Llama 3.3 70B Instruct](https://huggingface.co/unsloth/Llama-3.3-70B-Instruct)** to:
 1. Convert Python problem descriptions to Julia/R equivalents
 2. Generate syntactically correct Julia/R code solutions
 3. Create comprehensive unit tests for each solution
 
 **Example transformation:**
 ```
-Python Prompt → Llama 3 70B Instruct → Julia/R Prompt + Code + Unit Tests
+Python Prompt → Llama 3.3 70B Instruct → Julia/R Prompt + Code + Unit Tests
 ```
 
 #### Step 3: Validation Through Compilation and Testing
@@ -81,7 +102,7 @@ After filtering, we obtained **1,200 high-quality (prompt, code, unit_test) trip
 - ✅ Problems cover diverse programming concepts
 - ✅ Ready for RL training and evaluation
 
-**Key Insight**: The 60% success rate (1,200/2,000) demonstrates that even state-of-the-art models like Llama 3 70B Instruct struggle with underrepresented languages, validating the need for specialized fine-tuning.
+**Key Insight**: The 60% success rate (1,200/2,000) demonstrates that even state-of-the-art models like Llama 3.3 70B Instruct struggle with underrepresented languages, validating the need for specialized fine-tuning.
 
 This curated dataset forms the foundation for our GRPO training, ensuring the model learns from correct, executable examples.
 
@@ -110,7 +131,7 @@ Our training approach uses **execution-based rewards** to teach the model to gen
                               ▼
         ┌──────────────────────────────────────┐
         │  2. Model Generates Code Solution    │
-        │     - Llama 3.2 7B (fine-tuned)     │
+        │     - Llama 3.2 7B Instruct (RL)    │
         │     - Outputs Julia/R code          │
         └──────────────────────────────────────┘
                               │
@@ -205,19 +226,19 @@ These environments can be used independently for any Julia/R code generation or 
 ```
 amd-hackathon/
 ├── julia/
-│   ├── julia_generate_dataset.ipynb    # Generate Julia dataset from Python prompts
+│   ├── julia_generate_dataset.ipynb    # Generate Julia dataset using Llama 3.3 70B
 │   ├── julia_clean_dataset.ipynb       # Clean and preprocess Julia data
 │   ├── julia_dataset_check.ipynb       # Validate Julia dataset quality
-│   ├── julia_grpo.ipynb                # GRPO RL training for Julia only
+│   ├── julia_grpo.ipynb                # Train Llama 3.2 7B on Julia (GRPO)
 │   └── julia_dataset.parquet           # 1,200 validated Julia problems
 │
 ├── R/
-│   ├── r_generate_dataset.ipynb        # Generate R dataset from Python prompts
+│   ├── r_generate_dataset.ipynb        # Generate R dataset using Llama 3.3 70B
 │   ├── r_dataset_check.ipynb           # Validate R dataset quality
-│   ├── r_grpo.ipynb                    # GRPO RL training for R only
+│   ├── r_grpo.ipynb                    # Train Llama 3.2 7B on R (GRPO)
 │   └── r_dataset.parquet               # 1,200 validated R problems
 │
-├── unified_grpo.ipynb                   # GRPO training for both Julia + R
+├── unified_grpo.ipynb                   # Train Llama 3.2 7B on both languages
 ├── julia_dataset.parquet                # Root Julia dataset (1,200 problems)
 ├── r_dataset.parquet                    # Root R dataset (1,200 problems)
 └── README.md
@@ -228,17 +249,17 @@ amd-hackathon/
 We provide three Jupyter notebooks for flexible training:
 
 1. **`julia/julia_grpo.ipynb`**
-   - Trains Llama 3.2 7B specifically on Julia code generation
+   - Trains [unsloth/Llama-3.2-7B-Instruct](https://huggingface.co/unsloth/Llama-3.2-7B-Instruct) specifically on Julia code generation
    - Uses OpenEnv Julia environment for code execution and reward calculation
    - Best for Julia-only use cases
 
 2. **`R/r_grpo.ipynb`**
-   - Trains Llama 3.2 7B specifically on R code generation
+   - Trains [unsloth/Llama-3.2-7B-Instruct](https://huggingface.co/unsloth/Llama-3.2-7B-Instruct) specifically on R code generation
    - Uses OpenEnv R environment for code execution and reward calculation
    - Best for R-only use cases
 
 3. **`unified_grpo.ipynb`**
-   - Trains a single model on both Julia and R simultaneously
+   - Trains [unsloth/Llama-3.2-7B-Instruct](https://huggingface.co/unsloth/Llama-3.2-7B-Instruct) on both Julia and R simultaneously
    - Leverages both OpenEnv environments
    - Creates a multi-language code generation model
    - **Recommended** for maximum versatility
@@ -282,7 +303,9 @@ This project uses:
 - [Unsloth](https://github.com/unslothai/unsloth) for efficient LLM training
 - [OpenEnv](https://github.com/meta-pytorch/OpenEnv) for isolated execution environments with Gymnasium-style APIs
   - Custom Julia and R environments: [yogesh-julia-env branch](https://github.com/yogesh1801/OpenEnv/tree/yogesh-julia-env)
-- Meta's Llama 3.2 architecture as the base model
+- Meta's Llama models:
+  - [unsloth/Llama-3.2-7B-Instruct](https://huggingface.co/unsloth/Llama-3.2-7B-Instruct) - Model being fine-tuned
+  - [unsloth/Llama-3.3-70B-Instruct](https://huggingface.co/unsloth/Llama-3.3-70B-Instruct) - Used for dataset generation
 - GRPO (Group Relative Policy Optimization) for reinforcement learning
 - [Ace-Code-87k dataset](https://huggingface.co/datasets/BAAI/Infinity-Instruct) as the base Python dataset
 
