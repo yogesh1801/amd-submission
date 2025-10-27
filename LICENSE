@@ -1,0 +1,52 @@
+PROPRIETARY LICENSE
+
+Copyright (c) 2025. All Rights Reserved.
+
+This software and associated documentation files (the "Software"), including but not 
+limited to source code, datasets, trained models, and documentation, are proprietary 
+and confidential.
+
+RESTRICTIONS:
+
+1. You may NOT use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+   copies of the Software without explicit written permission from the copyright holder.
+
+2. You may NOT use the Software or any part thereof for commercial purposes without 
+   obtaining a separate commercial license.
+
+3. You may NOT reproduce, redistribute, or make available the datasets included in 
+   this project without explicit authorization.
+
+4. You may NOT deploy the trained models in any production system or service without 
+   prior written permission.
+
+5. You may NOT create derivative works based on the Software without authorization.
+
+PERMITTED USE:
+
+- Viewing the source code and documentation for educational purposes only
+- Academic research and study with proper attribution (contact for research license)
+- Personal, non-commercial evaluation in a local development environment only
+
+REQUESTING PERMISSION:
+
+For licensing inquiries, commercial use, research collaborations, or any permission 
+requests, please contact:
+
+yogeshsingla481 AT gmail dot com
+
+DISCLAIMER:
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+THIRD-PARTY COMPONENTS:
+
+This project uses third-party libraries and tools (Unsloth, OpenEnv, etc.) which are 
+subject to their own respective licenses. Use of those components must comply with 
+their individual license terms.
+
