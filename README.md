@@ -1,6 +1,11 @@
 ![Flow diagram](flow.png)
 
 
+Blog link - https://medium.com/@yogeshsingla481/training-a-multi-language-3b-coder-lm-with-reinforcement-learning-grpo-f37577d5e5f7
+
+Must Read for complete picture
+
+
 # Fine-tuning Modes for Underrepresented Programming Languages using Reinforcement Learning
 
 ## Problem Statement
